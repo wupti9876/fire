@@ -7,6 +7,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using PhotoSharingApplication.Models;
+using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace PhotoSharingApplication.Controllers
 {
@@ -46,15 +48,17 @@ namespace PhotoSharingApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PhotoID,Title,PhotoFile,ImageMimeType,Description,CreatedDate,UserName")] Photo photo)
+        public async Task<ActionResult> Create([Bind(Include = "PhotoID,Title,PhotoFile,ImageMimeType,Description,CreatedDate,UserName")] Photo photo)
         {
             if (ModelState.IsValid)
             {
                 db.Photos.Add(photo);
                 db.SaveChanges();
-
-
+                var t = await Common.CreateTableAsync("Photos");
+                TableOperation op = TableOperation.InsertOrMerge(photo);
+                var r = await t.ExecuteAsync(op);
                 return RedirectToAction("Index");
+                // v
             }
 
             return View(photo);

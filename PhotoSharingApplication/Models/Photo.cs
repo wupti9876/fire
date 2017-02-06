@@ -15,7 +15,18 @@ namespace PhotoSharingApplication.Models
         [Required]
         [HiddenInput]
         public int PhotoID { get; set; }
-        public string Title { get; set; }
+        private string _title;
+      
+        public string Title
+        {
+            get
+            { return this._title; }
+            set
+            {
+                RowKey = value;
+                _title = value;
+            }
+        }
         public byte[] PhotoFile { get; set; }
         [DisplayName("Picture")]
         public string ImageMimeType { get; set; }
@@ -27,12 +38,13 @@ namespace PhotoSharingApplication.Models
         public DateTime CreatedDate { get; set; }
         [Required]
         [StringLength(250)]
+        private string _userName;
         public string UserName {
             get
-            { return this.UserName; }
+            { return this._userName; }
             set
             {   PartitionKey = value;
-                this.UserName = value; }
+                _userName = value; }
             } 
         public virtual ICollection<Comment> Comments { get; set; }
     }
